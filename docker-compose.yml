@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://dairyflow:dairyflow@postgres:5432/dairyflow}
+      JWT_SECRET: ${JWT_SECRET:-change-this-before-production}
+      APP_ENV: ${APP_ENV:-development}
+    depends_on: [postgres]
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dairyflow
+      POSTGRES_PASSWORD: dairyflow
+      POSTGRES_DB: dairyflow
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+  frontend:
+    build: ./frontend
+    ports: ["3000:80"]
+    depends_on: [backend]
+volumes:
+  postgres_data:
